@@ -43,7 +43,7 @@ class Orders(models.Model):
     phone = models.CharField(max_length=100,default="")
     def __str__(self):
         return self.name
-# naman
+
 
 class OrderUpdate(models.Model):
     update_id = models.AutoField(primary_key=True)
