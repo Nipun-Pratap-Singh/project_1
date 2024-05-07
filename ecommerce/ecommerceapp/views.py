@@ -126,22 +126,31 @@ def handlerequest(request):
 
 def profile(request):
     if not request.user.is_authenticated:
-        messages.warning(request,"Login & Try Again")
+        messages.warning(request, "Login & Try Again")
         return redirect('/auth/login')
-    currentuser=request.user.username
-    items=Orders.objects.filter(email=currentuser)
-    rid=""
+    
+    currentuser = request.user.username
+    items = Orders.objects.filter(email=currentuser)
+
+    if not items:  # Check if items is empty
+        messages.info(request, "No orders found.")
+        return redirect('/')
+
+    rid = ""
     for i in items:
         print(i.oid)
-        # print(i.order_id)
-        myid=i.oid
-        rid=myid.replace("ShopyCart","")
+        myid = i.oid
+        rid = myid.replace("ShopyCart", "")
         print(rid)
-    status=OrderUpdate.objects.filter(order_id=int(rid))
-    for j in status:
-        print(j.update_desc)
 
-   
-    context ={"items":items,"status":status}
-    # print(currentuser)
-    return render(request,"profile.html",context)
+    try:
+        status = OrderUpdate.objects.filter(order_id=int(rid))
+        for j in status:
+            print(j.update_desc)
+    except ValueError:
+        # Handle the case where rid is not a valid integer
+        messages.error(request, "Invalid order ID.")
+        return redirect('/')
+
+    context = {"items": items, "status": status}
+    return render(request, "profile.html", context)
