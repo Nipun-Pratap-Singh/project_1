@@ -26,6 +26,7 @@ def index(request):
 
     return render(request,"index.html",params)
 
+# def contact
     
 def contact(request):
     if request.method=="POST":
